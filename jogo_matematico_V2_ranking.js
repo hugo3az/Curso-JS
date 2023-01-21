@@ -24,6 +24,7 @@ const operacoes = ["+", "-", "*", "/"];
 const local = [0, 1, 2];
 let resultado = 0;
 let ranking = [];
+let texto = "";
 
 //informar quantidade de vida inicial o usuario tem.
 console.log("voce tem " + vidas + " vidas restantes, a cada erro perdera 1 vida.")
@@ -115,8 +116,8 @@ function iniciaJogo() {
     ranking.push([nome, maxPontos]);
     for (let i = 0; i < ranking.length; i++) {
         nome = ranking[i][0];
-        //maxPontos = ranking[i];
     }
+    alert(ranking);
 
 
     if (joga == 1) {
@@ -129,5 +130,5 @@ function iniciaJogo() {
     }
 }
 
-//console.log("Voce fez " + maxPontos + " pontos.");
+console.log("Voce fez " + maxPontos + " pontos.");
 console.log(ranking);
