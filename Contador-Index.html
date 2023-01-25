@@ -15,9 +15,14 @@
     <button onclick=buttonClicado(3) id="button_contador_4">-10</button>
     <button onclick=buttonClicado(4) id="button_contador_5">+100</button>
     <button onclick=buttonClicado(5) id="button_contador_6">-100</button>
+
     <h1></h1>
     <span id="valor_aleatorio" style="color: blue;">0</span>
     <button onclick=clickAleatorio() id="button_aleatorio">Numero Aleatorio</button>
+
+    <h2>Historicos dos numeros que foram gerados aleatoriamente</h2>
+    <span id="array" style="color: green;">0</span>
+
     <script type="text/javascript">
         let contador = 0;
 
@@ -28,19 +33,31 @@
                     contador++;
                     break;
                 case 1:
-                    contador--;
+                    if (contador > 0) {
+                        contador--;
+                    } else {
+                        alert("O VALOR DO CONTADOR NÃO PODE FICAR  NEGATIVO -_-");
+                    }
                     break;
                 case 2:
                     contador = contador + 10;
                     break;
                 case 3:
-                    contador = contador - 10;
+                    if (contador > 9) {
+                        contador = contador - 10;
+                    } else {
+                        alert("O VALOR DO CONTADOR NÃO PODE FICAR  NEGATIVO -_-");
+                    }
                     break;
                 case 4:
                     contador = contador + 100;
                     break;
                 case 5:
-                    contador = contador - 100;
+                    if (contador > 99) {
+                        contador = contador - 100;
+                    } else {
+                        alert("O VALOR DO CONTADOR NÃO PODE FICAR  NEGATIVO -_-");
+                    }
                     break;
                 default:
                     contador = contador = contador;
@@ -50,9 +67,14 @@
             document.querySelector("#valor_contador_1").innerText = contador;
         }
 
+        let numAleatorio = [];
         function clickAleatorio() {
-            document.querySelector("#valor_aleatorio").innerText = Math.floor(Math.abs(Math.random() * (contador - 0)))
+            let aleatorio = Math.floor(Math.abs(Math.random() * (contador - 0)));
+            document.querySelector("#valor_aleatorio").innerText = aleatorio;
+            numAleatorio.push(aleatorio);
+            document.querySelector("#array").innerText = numAleatorio;
         }
+        
     </script>
 </body>
 
