@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Lista de Tarefas</title>
+        <meta charset="UTF-8"/>
+    </head>
+    <body>
+        <input type="text" id="tarefa" placeholder="Informe aqui sua Lista de tarefas:"/>
+        <button id="Adicionar">Adicionar</button>
+        <br/>
+        <ul id="lista"></ul>
+        <script type="text/javascript">
+            function Adicionar(){
+                console.log("Funcao adicionar executada");
+                let tarefa = document.querySelector("#tarefa").value;
+                let ul = document.querySelector("ul");
+                let li = document.createElement("li");
+                li.innerText = tarefa;
+                li.addEventListener('click', function(){
+                    li.parentNode.removeChild(li);
+                });
+                ul.appendChild(li);
+                console.log(li);
+            }
+            document.querySelector("#Adicionar").addEventListener('click', Adicionar);
+        </script>
+    </body>
+</html>
