@@ -1,23 +1,4 @@
-let currentId = 0;
-
-function setupCurrentIdTodos(todos) {
-  for (let i = 0; i < todos.length; i++) {
-    if (todos[i].id > currentId)
-      currentId = todos[i].id;
-  }
-}
-
-function addID(task) {
-  currentId = currentId + 1;
-  task.id = currentId;
-}
-
-function addTimestemp(task) {
-  task.createdAt = +new Date();
-  task.updatedAt = +new Date();
-}
-
-function addTodo(request, response, url, todos, categories, writeTODOtoFile) {
+function addTodo(request, response, url, connection) {
   response.statusCode = 201;
   let data = "";
   request.on('data', (chunk) => {
@@ -25,20 +6,16 @@ function addTodo(request, response, url, todos, categories, writeTODOtoFile) {
   });
   request.on("end", () => {
     let task = JSON.parse(data);
-    let temCategoria = false;
-    for (let i = 0; i < categories.length; i++) {
-      if (categories[i].id == task.categoryId) {
-        temCategoria = true;
-        break;
-      }
-    }
-
-    if (task.title && task.description && temCategoria) {
-      addID(task);
-      addTimestemp(task);
-      todos.push(task);
-      writeTODOtoFile();
-      response.end();
+    if (task.categoryId && task.title && task.description) {
+      connection.query(`INSERT INTO todo (title, description, category_id) VALUES ('${task.title}', '${task.description}', '${task.categoryId}')`, (error, result) => {
+        if (error) {
+          response.statusCode = 500;
+          response.end("SERVER ERROR");
+        } else {
+          response.statusCode = 201;
+          response.end("CREATED");
+        }
+      });
     } else {
       response.statusCode = 400;
       response.end("BAD REQUEST");
@@ -46,92 +23,88 @@ function addTodo(request, response, url, todos, categories, writeTODOtoFile) {
   });
 }
 
-function findById(id, todos) {
-  for (let i = 0; i < todos.length; i++) {
-    if (todos[i].id == id) {
-      return todos[i];
-    }
-  }
-  return false;
-}
 function listTodos(request, response, url, connection) {
-  response.setHeader('Content-type','application/json');
+  response.setHeader('Content-type', 'application/json');
   let query = `SELECT * FROM todo`;
   if (url.query.id) {
     query += ` WHERE id=${url.query.id}`;
-    if(url.query.showDeleted != "1"){
+    if (url.query.showDeleted != "1") {
       query += ` AND deleted_at IS NULL`;
     }
   } else if (url.query.categoryId) {
     query += `WHERE category_id=${url.query.categoryId}`;
-    if(url.query.showDeleted != "1"){
+    if (url.query.showDeleted != "1") {
       query += ` AND deleted_at IS NULL`;
     }
 
-  }else{
-    if(url.query.showDeleted != "1"){
+  } else {
+    if (url.query.showDeleted != "1") {
       query += ` WHERE deleted_at IS NULL`;
     }
   }
 
-  connection.query(query,(error, result) => {
+  connection.query(query, (error, result) => {
     if (error) {
       response.statusCode = 404;
-      response.end("NOT FOUND")
+      response.end("NOT FOUND");
     } else {
       response.end(JSON.stringify(result));
     }
   });
 }
 
-function deleteTodo(request, response, url, todos, categories, writeTODOtoFile) {
+function deleteTodo(request, response, url, connection) {
   if (url.query.id) {
-    for (let i = 0; i < todos.length; i++) {
-      if (todos[i].id == url.query.id) {
-        todos[i].deletedAt = +new Date();
-        writeTODOtoFile()
-      }
-    }
-    response.end();
+    let = deletedAt = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
+    connection.query(`UPDATE todo SET deleted_at='${deletedAt}' WHERE id='${url.query.id}'`
+      , (error, result) => {
+        if (error) {
+          response.statusCode = 500;
+          response.end("SERVER ERROR");
+        } else {
+          response.statusCode = 200;
+          response.end();
+        }
+      });
   } else {
     response.statusCode = 400;
     response.end("BAD REQUEST");
   }
 }
 
-function updateTodo(request, response, url, todos, categories, writeTODOtoFile) {
-  if (url.query.id) {
-    for (let i = 0; i < todos.length; i++) {
-      if (todos[i].id == url.query.id && !todos[i].deletedAt) {
-        let data = "";
-        request.on('data', (chunk) => {
-          data += chunk;
-        });
-        request.on("end", () => {
-          let task = JSON.parse(data);
-          if (task.title && task.description && task.categoryId) {
-            task.id = todos[i].id;
-            task.createdAt = todos[i].createdAt;
-            task.updatedAt = +new Date();
-            todos[i] = task;
-            writeTODOtoFile();
-            response.end();
-          } else {
-            response.statusCode = 400;
-            response.end("BAD REQUEST");
-          }
-        });
-        return;
-      }
+  function updateTodo(request, response, url, connection) {
+    if (url.query.id) {
+      let data = "";
+      request.on('data', (chunk) => {
+        data += chunk;
+      });
+      request.on("end", () => {
+        let task = JSON.parse(data);
+        if (task.title && task.description && task.categoryId) {
+          task.updatedAt = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
+          //ATUALIZAR NO BANCO
+          connection.query(`UPDATE todo SET title='${task.title}', description='${task.description}', category_id='${task.categoryId}', updated_at='${task.updatedAt}' WHERE id='${url.query.id}'`
+            , (error, result) => {
+              if (error) {
+                response.statusCode = 500;
+                response.end("SERVER ERROR");
+              } else {
+                response.statusCode = 200;
+                response.end();
+              }
+            });
+          response.end();
+        } else {
+          response.statusCode = 400;
+          response.end("BAD REQUEST");
+        }
+      });
+    } else {
+      response.statusCode = 400;
+      response.end("BAD REQUEST");
     }
-    response.statusCode = 404;
-    response.end("NOT FOUND");
-  } else {
-    response.statusCode = 400;
-    response.end("BAD REQUEST");
   }
-}
 
-module.exports = {
-  addTodo, listTodos, deleteTodo, updateTodo, setupCurrentIdTodos
-}
+  module.exports = {
+    addTodo, listTodos, deleteTodo, updateTodo
+  }

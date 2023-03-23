@@ -25,7 +25,7 @@ const options = {
   encoding: "utf-8"
 };
 
-const { listTodos, addTodo, updateTodo, deleteTodo, setupCurrentIdTodos } = require("./routers/todos-router");
+const { listTodos, addTodo, updateTodo, deleteTodo} = require("./routers/todos-router");
 const { listCategories, addCategory, updateCategory, deleteCategory, setupCurrentIdCategories } = require("./routers/category-route");
 const { listUser, addUser, updateUser, deleteUser, setupCurrentIdUser } = require("./routers/user-router");
 
@@ -55,7 +55,6 @@ fs.readFile(path.join("db", "category.json"), options, (error, data) => {
 fs.readFile(path.join("db", "todo.json"), options, (error, data) => {
   if (!error) {
     todos = JSON.parse(data);
-    setupCurrentIdTodos(todos);
   } else {
     console.error(error);
   }
@@ -94,13 +93,15 @@ function processRequest(request, response) {
         listTodos(request, response, reqUrl, connection);
         break;
       case "POST":
-        addTodo(request, response, reqUrl, todos, categories, user, writeTODOtoFile);
+        //INSERT INTO
+        addTodo(request, response, reqUrl, connection);
         break;
       case "PUT":
-        updateTodo(request, response, reqUrl, todos, categories, user, writeTODOtoFile);
+        //UPDATE INTO
+        updateTodo(request, response, reqUrl, connection);
         break;
       case "DELETE":
-        deleteTodo(request, response, reqUrl, todos, categories, user, writeTODOtoFile);
+        deleteTodo(request, response, reqUrl, connection);
         break;
     }
   } else if (reqUrl.pathname == "/category") {
