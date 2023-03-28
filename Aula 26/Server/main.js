@@ -26,7 +26,7 @@ const options = {
 };
 
 const { listTodos, addTodo, updateTodo, deleteTodo} = require("./routers/todos-router");
-const { listCategories, addCategory, updateCategory, deleteCategory, setupCurrentIdCategories } = require("./routers/category-route");
+const { listCategories, addCategory, updateCategory, deleteCategory } = require("./routers/category-route");
 const { listUser, addUser, updateUser, deleteUser, setupCurrentIdUser } = require("./routers/user-router");
 
 
@@ -42,47 +42,6 @@ fs.readFile(path.join("db", "user.json"), options, (error, data) => {
     console.error(error);
   }
 })
-
-fs.readFile(path.join("db", "category.json"), options, (error, data) => {
-  if (!error) {
-    categories = JSON.parse(data);
-    setupCurrentIdCategories(categories);
-  } else {
-    console.error(error);
-  }
-})
-
-fs.readFile(path.join("db", "todo.json"), options, (error, data) => {
-  if (!error) {
-    todos = JSON.parse(data);
-  } else {
-    console.error(error);
-  }
-})
-
-const writeUSERtoFile = () => {
-  fs.writeFile(path.join("db", "user.json"), JSON.stringify(user), (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
-
-const writeTODOtoFile = () => {
-  fs.writeFile(path.join("db", "todo.json"), JSON.stringify(todos), (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
-
-const writeCATEGORYtoFile = () => {
-  fs.writeFile(path.join("db", "category.json"), JSON.stringify(categories), (err) => {
-    if (err) {
-      console.error(err);
-    }
-  });
-}
 
 function processRequest(request, response) {
 
@@ -107,16 +66,16 @@ function processRequest(request, response) {
   } else if (reqUrl.pathname == "/category") {
     switch (request.method) {
       case "GET":
-        listCategories(request, response, reqUrl, todos, categories, user, writeCATEGORYtoFile);
+        listCategories(request, response, reqUrl, connection);
         break;
       case "POST":
-        addCategory(request, response, reqUrl, todos, categories, user, writeCATEGORYtoFile);
+        addCategory(request, response, reqUrl, connection);
         break;
       case "PUT":
-        updateCategory(request, response, reqUrl, todos, categories, user, writeCATEGORYtoFile);
+        updateCategory(request, response, reqUrl, connection);
         break;
       case "DELETE":
-        deleteCategory(request, response, reqUrl, todos, categories, user, writeCATEGORYtoFile);
+        deleteCategory(request, response, reqUrl, connection);
         break;
     }
   } else if (reqUrl.pathname == "/user") {
