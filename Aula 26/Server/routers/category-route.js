@@ -6,22 +6,22 @@ function addCategory(request, response, url, connection) {
     data += chunk;
   });
   request.on("end", () => {
-    let task = JSON.parse(data);
-    if (task.name) {
-      query += `VALUES ('${task.name}')`;
+    let category = JSON.parse(data);
+    if (category.name) {
+      connection.query(`INSERT INTO category (name) VALUES ('${category.name}')`
+        , (error, result) => {
+          if (error) {
+            response.statusCode = 500;
+            response.end("SERVER ERROR");
+          } else {
+            response.statusCode = 201;
+            response.end("CREATED");
+          }
+        });
     } else {
       response.statusCode = 400;
       response.end("BAD REQUEST");
     }
-    console.log(query);
-    connection.query(query, (error, result) => {
-      if (error) {
-        response.statusCode = 400;
-        response.end("BAD REQUEST");
-      } else {
-        response.end(JSON.stringify(result));
-      }
-    });
   });
 }
 
@@ -38,7 +38,6 @@ function listCategories(request, response, url, connection) {
       query += ` WHERE deleted_at IS NULL`;
     }
   }
-  console.log(query);
   connection.query(query, (error, result) => {
     if (error) {
       response.statusCode = 500;
@@ -58,7 +57,7 @@ function deleteCategory(request, response, url, connection) {
           response.end("SERVER ERROR");
         } else {
           response.statusCode = 200;
-          response.end();
+          response.end("DELETED");
         }
       });
   } else {
