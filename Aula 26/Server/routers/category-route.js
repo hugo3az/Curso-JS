@@ -51,8 +51,7 @@ function listCategories(request, response, url, connection) {
 
 function deleteCategory(request, response, url, connection) {
   if (url.query.id) {
-    let deletedAt = (new Date()).toISOString().slice(0,19).replace('T', ' ');
-    connection.query(`UPDATE category SET deleted_at='${deletedAt}' WHERE id=${url.query.id}`
+    connection.query(`UPDATE category SET deleted_at=NOW() WHERE id=${url.query.id}`
       , (error, result) => {
         if (error) {
           response.statusCode = 500;
@@ -78,8 +77,7 @@ function updateCategory(request, response, url, connection) {
     request.on("end", () => {
       let task = JSON.parse(data);
       if (task.name) {
-        task.updatedAt = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
-        connection.query(`UPDATE category SET name='${task.name}', updated_at='${task.updatedAt}' WHERE id=${url.query.id}`
+        connection.query(`UPDATE category SET name='${task.name}', updated_at=NOW() WHERE id=${url.query.id}`
           , (error, result) => {
             if (error) {
               response.statusCode = 500;

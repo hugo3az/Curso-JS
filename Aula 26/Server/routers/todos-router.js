@@ -55,8 +55,7 @@ function listTodos(request, response, url, connection) {
 
 function deleteTodo(request, response, url, connection) {
   if (url.query.id) {
-    let = deletedAt = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
-    connection.query(`UPDATE todo SET deleted_at='${deletedAt}' WHERE id='${url.query.id}'`
+    connection.query(`UPDATE todo SET deleted_at=NOW() WHERE id='${url.query.id}'`
       , (error, result) => {
         if (error) {
           response.statusCode = 500;
@@ -81,9 +80,8 @@ function deleteTodo(request, response, url, connection) {
       request.on("end", () => {
         let task = JSON.parse(data);
         if (task.title && task.description && task.categoryId) {
-          task.updatedAt = (new Date()).toISOString().slice(0, 19).replace('T', ' ');
           //ATUALIZAR NO BANCO
-          connection.query(`UPDATE todo SET title='${task.title}', description='${task.description}', category_id='${task.categoryId}', updated_at='${task.updatedAt}' WHERE id='${url.query.id}'`
+          connection.query(`UPDATE todo SET title='${task.title}', description='${task.description}', category_id='${task.categoryId}', updated_at=NOW() WHERE id='${url.query.id}'`
             , (error, result) => {
               if (error) {
                 response.statusCode = 500;

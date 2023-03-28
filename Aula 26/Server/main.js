@@ -13,9 +13,9 @@ const connection = mysql.createConnection({
 });
 
 connection.query("SELECT 1", (error, result) => {
-  if(error){
+  if (error) {
     console.log("Erro ao conectar com o banco de dados!", error);
-  }else{
+  } else {
     console.log("Banco de dados conectado com sucesso!");
   }
 });
@@ -25,14 +25,10 @@ const options = {
   encoding: "utf-8"
 };
 
-const { listTodos, addTodo, updateTodo, deleteTodo} = require("./routers/todos-router");
+const { listTodos, addTodo, updateTodo, deleteTodo } = require("./routers/todos-router");
 const { listCategories, addCategory, updateCategory, deleteCategory } = require("./routers/category-route");
 const { listUser, addUser, updateUser, deleteUser, setupCurrentIdUser } = require("./routers/user-router");
 
-
-let todos = [];
-let categories = [];
-let user = [];
 
 fs.readFile(path.join("db", "user.json"), options, (error, data) => {
   if (!error) {
@@ -41,7 +37,7 @@ fs.readFile(path.join("db", "user.json"), options, (error, data) => {
   } else {
     console.error(error);
   }
-})
+});
 
 function processRequest(request, response) {
 
@@ -76,21 +72,6 @@ function processRequest(request, response) {
         break;
       case "DELETE":
         deleteCategory(request, response, reqUrl, connection);
-        break;
-    }
-  } else if (reqUrl.pathname == "/user") {
-    switch (request.method) {
-      case "GET":
-        listUser(request, response, reqUrl, todos, categories, user, writeUSERtoFile);
-        break;
-      case "POST":
-        addUser(request, response, reqUrl, todos, categories, user, writeUSERtoFile);
-        break;
-      case "PUT":
-        updateUser(request, response, reqUrl, todos, categories, user, writeUSERtoFile);
-        break;
-      case "DELETE":
-        deleteUser(request, response, reqUrl, todos, categories, user, writeUSERtoFile);
         break;
     }
   }
