@@ -81,11 +81,10 @@ function updateCategory(request, response, url, connection) {
               response.statusCode = 500;
               response.end("SERVER ERROR");
             } else {
-              response.statusCode = 201;
-              response.end("CREATED");
+              response.statusCode = 200;
+              response.end("UPDATED");
             }
           });
-        response.end();
       } else {
         response.statusCode = 400;
         response.end("BAD REQUEST");
