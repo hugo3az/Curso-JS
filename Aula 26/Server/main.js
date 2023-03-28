@@ -29,16 +29,6 @@ const { listTodos, addTodo, updateTodo, deleteTodo } = require("./routers/todos-
 const { listCategories, addCategory, updateCategory, deleteCategory } = require("./routers/category-route");
 const { listUser, addUser, updateUser, deleteUser, setupCurrentIdUser } = require("./routers/user-router");
 
-
-fs.readFile(path.join("db", "user.json"), options, (error, data) => {
-  if (!error) {
-    user = JSON.parse(data);
-    setupCurrentIdUser(user);
-  } else {
-    console.error(error);
-  }
-});
-
 function processRequest(request, response) {
 
   const reqUrl = url.parse(request.url, true);

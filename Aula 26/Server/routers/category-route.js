@@ -61,7 +61,6 @@ function deleteCategory(request, response, url, connection) {
           response.end();
         }
       });
-      console.log(deletedAt);
   } else {
     response.statusCode = 400;
     response.end("BAD REQUEST");
