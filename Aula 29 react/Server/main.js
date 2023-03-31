@@ -27,6 +27,7 @@ const options = {
 
 const { listTodos, addTodo, updateTodo, deleteTodo } = require("./routers/todos-router");
 const { listCategories, addCategory, updateCategory, deleteCategory } = require("./routers/category-route");
+const { listUser, addUser, updateUser, deleteUser, setupCurrentIdUser } = require("./routers/user-router");
 
 function processRequest(request, response) {
 
